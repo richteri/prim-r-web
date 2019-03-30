@@ -11,8 +11,6 @@ import redis.embedded.RedisServer;
 @Component
 public class EmbeddedRedis {
 
-    private static final String MAXHEAP_1_GB = "maxheap 1024M";
-
     @Value("${spring.redis.port}")
     private int redisPort;
 
@@ -20,10 +18,7 @@ public class EmbeddedRedis {
 
     @PostConstruct
     public void startRedis() {
-        redisServer = RedisServer.builder()
-                .port(redisPort)
-                .setting(MAXHEAP_1_GB)
-                .build();
+        redisServer = new RedisServer(redisPort);
         redisServer.start();
     }
 
