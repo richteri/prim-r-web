@@ -39,5 +39,61 @@ spec:
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
         resources:
+      - env:
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: postgresHost
+                name: managed-services
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: postgresPort
+                name: managed-services
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                key: postgresDb
+                name: managed-services
+          - name: REDIS_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: redisHost
+                name: managed-services
+          - name: REDIS_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: redisPort
+                name: managed-services
+          - name: JOB_QUEUE_KEY
+            valueFrom:
+              configMapKeyRef:
+                key: jobQueueKey
+                name: managed-services
+          - name: PROCESSING_QUEUE_KEY
+            valueFrom:
+              configMapKeyRef:
+                key: processingQueueKey
+                name: managed-services
+          - name: CACHE_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: cacheName
+                name: managed-services
+          - name: SPRING_PROFILES_ACTIVE
+            valueFrom:
+              configMapKeyRef:
+                key: springProfilesActive
+                name: managed-services
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                key: user
+                name: postgres-secret
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: postgres-secret
 {{ toYaml .Values.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
