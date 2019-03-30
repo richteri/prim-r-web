@@ -1,10 +1,8 @@
 package com.example.primrweb;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
@@ -13,17 +11,18 @@ import redis.embedded.RedisServer;
 @Component
 public class EmbeddedRedis {
 
+    private static final String MAXHEAP_1_GB = "maxheap 1024M";
+
+    @Value("${spring.redis.port}")
     private int redisPort;
 
     private RedisServer redisServer;
 
     @PostConstruct
-    public void startRedis() throws IOException {
-        Path myTempDir = Files.createTempDirectory("redis");
+    public void startRedis() {
         redisServer = RedisServer.builder()
-                .port(16379)
-                .setting("maxheap 1gb")
-                .setting("heapdir " + myTempDir.toAbsolutePath().toString())
+                .port(redisPort)
+                .setting(MAXHEAP_1_GB)
                 .build();
         redisServer.start();
     }
