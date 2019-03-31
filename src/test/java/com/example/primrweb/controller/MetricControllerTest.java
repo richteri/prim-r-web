@@ -5,6 +5,7 @@ import static com.example.primrweb.controller.MetricController.STATUS_KEY;
 import static com.example.primrweb.controller.MetricController.STATUS_UP;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.primrweb.AbstractTest;
@@ -88,6 +89,16 @@ public class MetricControllerTest extends AbstractTest {
 
         // Assert
         collector.checkThat(actual.get(SAMPLE_CACHE_NAME), is(Collections.emptySet()));
+    }
+
+    @Test
+    public void flushAllShouldDelegateToConnection() {
+        // Arrange & Act
+        controller.flushAll();
+
+        // Assert
+        verify(connection).flushAll();
+        verify(connection).close();
     }
 
 }
