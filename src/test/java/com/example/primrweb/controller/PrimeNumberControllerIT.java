@@ -9,17 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.primrweb.AbstractMockMvcIT;
-import com.example.primrweb.ApplicationProperties;
 import com.example.primrweb.domain.PrimeNumber;
 import com.example.primrweb.repository.PrimeNumberRepository;
-import com.example.primrweb.service.PrimeNumberService;
 import lombok.val;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.web.servlet.MockMvc;
 
 public class PrimeNumberControllerIT extends AbstractMockMvcIT {
 
@@ -33,29 +28,10 @@ public class PrimeNumberControllerIT extends AbstractMockMvcIT {
     private static final String PRIME_PATH = "$.prime";
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ApplicationProperties properties;
-
-    @Autowired
-    private RedisTemplate<String, Long> redisTemplate;
-
-    @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired
     private PrimeNumberRepository repository;
 
     @Autowired
-    private PrimeNumberService service;
-
-    @Before
-    public void setUp() {
-        redisTemplate.opsForList().trim(properties.getJobQueueKey(), 0, 0);
-        redisTemplate.opsForList().trim(properties.getProcessingQueueKey(), 0, 0);
-        cacheManager.getCache(CACHE_NAME).clear();
-    }
+    private CacheManager cacheManager;
 
     @Test
     public void findByNumberShouldReturn200IfPresentInDb() throws Exception {
@@ -89,6 +65,22 @@ public class PrimeNumberControllerIT extends AbstractMockMvcIT {
                 .andExpect(status().isAccepted());
 
         // Act & Assert
+        val number = redisTemplate.opsForList().index(properties.getJobQueueKey(), 0);
+        collector.checkThat(number, is(SAMPLE_NUMBER));
+    }
+
+    @Test
+    public void findByNumberShouldNotAddToQueueAndReturn202IfAlreadyQueued() throws Exception {
+        // Arrange
+        mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
+                .andExpect(status().isAccepted());
+
+        // Act
+        mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
+                .andExpect(status().isAccepted());
+
+        // Assert
+        collector.checkThat(redisTemplate.opsForList().size(properties.getJobQueueKey()), is(1L));
         val number = redisTemplate.opsForList().index(properties.getJobQueueKey(), 0);
         collector.checkThat(number, is(SAMPLE_NUMBER));
     }

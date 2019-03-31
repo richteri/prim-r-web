@@ -2,6 +2,7 @@ application:
 
   jobQueueKey: jobQueue
   processingQueueKey: processingQueue
+  cacheName: primeNumberCache
 
 spring:
 

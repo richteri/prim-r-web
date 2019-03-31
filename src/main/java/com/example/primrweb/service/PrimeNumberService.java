@@ -6,6 +6,4 @@ import java.util.Optional;
 public interface PrimeNumberService {
 
     Optional<PrimeNumber> findByNumber(Long number);
-
-    PrimeNumber save(PrimeNumber primeNumber);
 }

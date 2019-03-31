@@ -42,17 +42,4 @@ public class PrimeNumberServiceImplTest extends AbstractTest {
         collector.checkThat(actual, is(SAMPLE_OPTIONAL));
         verify(repository).findByNumber(SAMPLE_NUMBER);
     }
-
-    @Test
-    public void saveShouldDelegateToRepository() {
-        // Arrange
-        when(repository.save(SAMPLE_PRIME_NUMBER)).thenReturn(SAMPLE_PRIME_NUMBER);
-
-        // Act
-        val actual = service.save(SAMPLE_PRIME_NUMBER);
-
-        // Assert
-        collector.checkThat(actual, is(SAMPLE_PRIME_NUMBER));
-        verify(repository).save(SAMPLE_PRIME_NUMBER);
-    }
 }

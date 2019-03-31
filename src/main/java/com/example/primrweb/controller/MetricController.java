@@ -4,10 +4,15 @@ import static com.example.primrweb.controller.MetricController.ENDPOINT;
 
 import com.example.primrweb.ApplicationProperties;
 import com.example.primrweb.service.QueueService;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +30,7 @@ public class MetricController {
 
     private final QueueService queueService;
     private final ApplicationProperties properties;
+    private final RedisConnectionFactory redisConnectionFactory;
 
     @GetMapping
     public Map<String, Object> get() {
@@ -33,7 +39,23 @@ public class MetricController {
         map.put(GKE_KEY, properties.getGke());
         map.put(properties.getJobQueueKey(), queueService.getJobQueueSnapshot());
         map.put(properties.getProcessingQueueKey(), queueService.getProcessingQueueSnapshot());
+        map.put(properties.getCacheName(), getCacheKeys());
         return map;
+    }
+
+    private Set<String> getCacheKeys() {
+        RedisConnection connection = null;
+        try {
+            connection = redisConnectionFactory.getConnection();
+            val redisKeys = connection.keys((properties.getCacheName() + "*").getBytes());
+            return redisKeys == null ? Collections.emptySet() : redisKeys.stream()
+                    .map(data -> new String(data, 0, data.length))
+                    .collect(Collectors.toSet());
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
 
 }
