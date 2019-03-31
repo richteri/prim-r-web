@@ -18,7 +18,7 @@ public class PrimeNumberServiceImpl implements PrimeNumberService {
 
     private final PrimeNumberRepository repository;
 
-    @Cacheable(value = CACHE_NAME, unless = "#result == null || #result.empty()")
+    @Cacheable(value = CACHE_NAME)
     @Override
     public Optional<PrimeNumber> findByNumber(Long number) {
         log.info("Searching number #{} in database", number);

@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class PrimeNumberController {
 
-    static final String ENDPOINT = "prime-numbers";
-    private static final String NUMBER_PARAM = "number";
+    static final String ENDPOINT = "/prime-numbers";
+    static final String NUMBER_PARAM = "number";
 
     private final PrimeNumberService primeNumberService;
     private final QueueService queueService;

@@ -1,22 +1,36 @@
 package com.example.primrweb.controller;
 
+import static com.example.primrweb.config.CacheConfig.CACHE_NAME;
+import static com.example.primrweb.controller.PrimeNumberController.ENDPOINT;
+import static com.example.primrweb.controller.PrimeNumberController.NUMBER_PARAM;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.example.primrweb.AbstractMockMvcIT;
 import com.example.primrweb.ApplicationProperties;
-import com.example.primrweb.config.CacheConfig;
+import com.example.primrweb.domain.PrimeNumber;
+import com.example.primrweb.repository.PrimeNumberRepository;
+import com.example.primrweb.service.PrimeNumberService;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 
-@AutoConfigureMockMvc
-@SpringBootTest
-@ActiveProfiles("test")
-public class PrimeNumberControllerIT extends AbstractTransactionalJUnit4SpringContextTests {
+public class PrimeNumberControllerIT extends AbstractMockMvcIT {
+
+    private static final long SAMPLE_NUMBER = 2L;
+    private static final String SAMPLE_NUMBER_PARAM = "2";
+    private static final long SAMPLE_PRIME = 3L;
+    private static final PrimeNumber SAMPLE_PRIME_NUMBER = new PrimeNumber()
+            .setNumber(SAMPLE_NUMBER)
+            .setPrime(SAMPLE_PRIME);
+
+    private static final String PRIME_PATH = "$.prime";
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,26 +44,47 @@ public class PrimeNumberControllerIT extends AbstractTransactionalJUnit4SpringCo
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    private PrimeNumberRepository repository;
+
+    @Autowired
+    private PrimeNumberService service;
+
     @Before
     public void setUp() {
         redisTemplate.opsForList().trim(properties.getJobQueueKey(), 0, 0);
         redisTemplate.opsForList().trim(properties.getProcessingQueueKey(), 0, 0);
-        cacheManager.getCache(CacheConfig.CACHE_NAME).clear();
+        cacheManager.getCache(CACHE_NAME).clear();
     }
 
     @Test
-    public void findByNumberShouldReturn200IfPresentInDb() {
+    public void findByNumberShouldReturn200IfPresentInDb() throws Exception {
+        repository.save(new PrimeNumber()
+                .setNumber(SAMPLE_NUMBER)
+                .setPrime(SAMPLE_PRIME));
+
+        mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(PRIME_PATH).value(SAMPLE_PRIME));
+    }
+
+    @Test
+    public void findByNumberShouldReturn200IfPresentInCache() throws Exception {
+        cacheManager.getCache(CACHE_NAME).put(SAMPLE_NUMBER, SAMPLE_PRIME_NUMBER);
+
+        mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(PRIME_PATH).value(SAMPLE_PRIME));
 
     }
 
     @Test
-    public void findByNumberShouldReturn200IfPresentInCache() {
+    public void findByNumberShouldAddToQueueAndReturn202IfNotFound() throws Exception {
+        mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
+                .andExpect(status().isAccepted());
 
-    }
-
-    @Test
-    public void findByNumberShouldAddToQueueAndReturn202IfNotFound() {
-
+        val number = redisTemplate.opsForList().index(properties.getJobQueueKey(), 0);
+        collector.checkThat(number, is(SAMPLE_NUMBER));
     }
 
 }
