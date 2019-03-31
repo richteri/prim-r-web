@@ -10,6 +10,17 @@ public class ApplicationProperties {
     private String jobQueueKey;
     private String processingQueueKey;
 
-    // TODO Use configurable cache name using CacheResolver
+    // TODO PRIMRWEB-1 Use configurable cache name using CacheResolver
     private String cacheName;
+
+    private Gke gke;
+
+    @Data
+    public static class Gke {
+        private String nodeName;
+        private String podName;
+        private String podNamespace;
+        private String podIp;
+        private String podServiceAccount;
+    }
 }

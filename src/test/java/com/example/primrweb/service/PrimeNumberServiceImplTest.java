@@ -4,20 +4,16 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.primrweb.AbstractTest;
 import com.example.primrweb.domain.PrimeNumber;
 import com.example.primrweb.repository.PrimeNumberRepository;
 import java.util.Optional;
 import lombok.val;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PrimeNumberServiceImplTest {
+public class PrimeNumberServiceImplTest extends AbstractTest {
 
     private static final long SAMPLE_NUMBER = 42L;
     private static final PrimeNumber SAMPLE_PRIME_NUMBER = new PrimeNumber()
@@ -27,9 +23,6 @@ public class PrimeNumberServiceImplTest {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static final Optional<PrimeNumber> SAMPLE_OPTIONAL = Optional.of(SAMPLE_PRIME_NUMBER);
-
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
 
     @Mock
     private PrimeNumberRepository repository;

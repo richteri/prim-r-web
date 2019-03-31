@@ -1,6 +1,10 @@
 package com.example.primrweb.service;
 
 import com.example.primrweb.ApplicationProperties;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +30,32 @@ public class QueueServiceImpl implements QueueService {
         }
     }
 
-    // TODO Non-atomic operation, might result in duplicated tasks
+    @Override
+    public List<Long> getJobQueueSnapshot() {
+        return getQueueSnapshot(properties.getJobQueueKey());
+    }
+
+    @Override
+    public List<Long> getProcessingQueueSnapshot() {
+        return getQueueSnapshot(properties.getProcessingQueueKey());
+    }
+
     private boolean isInQueue(String key, Long number) {
-        boolean inQueue = false;
+        return getQueueSnapshot(key).contains(number);
+    }
+
+    // TODO PRIMRWEB-2 Non-atomic operation, might result in duplicated jobs
+    private List<Long> getQueueSnapshot(String key) {
         val size = redisTemplate.opsForList().size(key);
         if (size != null) {
-            inQueue = LongStream
+            return LongStream
                     .range(0, size.intValue())
-                    .anyMatch(i -> number.equals(redisTemplate.opsForList().index(key, i)));
+                    .boxed()
+                    .map(i -> redisTemplate.opsForList().index(key, i))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
         }
-        return inQueue;
+
+        return Collections.emptyList();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.primrweb;
 
-import static com.example.primrweb.config.TestConstants.SPRING_PROFILE_NAME;
+import static com.example.primrweb.TestUtils.SPRING_PROFILE_NAME;
 import static org.springframework.http.HttpHeaders.ORIGIN;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;

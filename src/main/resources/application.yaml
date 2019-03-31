@@ -3,6 +3,13 @@ application:
   jobQueueKey: ${JOB_QUEUE_KEY}
   processingQueueKey: ${PROCESSING_QUEUE_KEY}
 
+  gke:
+    nodeName: ${GKE_NODE_NAME}
+    podName: ${GKE_POD_NAME}
+    podNamespace: ${GKE_POD_NAMESPACE}
+    podIp: ${GKE_POD_IP}
+    podServiceAccount: ${GKE_POD_SERVICE_ACCOUNT}
+
 spring:
 
   datasource:

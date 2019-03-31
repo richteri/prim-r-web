@@ -59,10 +59,12 @@ public class PrimeNumberControllerIT extends AbstractMockMvcIT {
 
     @Test
     public void findByNumberShouldReturn200IfPresentInDb() throws Exception {
+        // Arrange
         repository.save(new PrimeNumber()
                 .setNumber(SAMPLE_NUMBER)
                 .setPrime(SAMPLE_PRIME));
 
+        // Act & Assert
         mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(PRIME_PATH).value(SAMPLE_PRIME));
@@ -70,8 +72,10 @@ public class PrimeNumberControllerIT extends AbstractMockMvcIT {
 
     @Test
     public void findByNumberShouldReturn200IfPresentInCache() throws Exception {
+        // Arrange
         cacheManager.getCache(CACHE_NAME).put(SAMPLE_NUMBER, SAMPLE_PRIME_NUMBER);
 
+        // Act & Assert
         mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(PRIME_PATH).value(SAMPLE_PRIME));
@@ -80,9 +84,11 @@ public class PrimeNumberControllerIT extends AbstractMockMvcIT {
 
     @Test
     public void findByNumberShouldAddToQueueAndReturn202IfNotFound() throws Exception {
+        // Arrange
         mockMvc.perform(get(ENDPOINT).param(NUMBER_PARAM, SAMPLE_NUMBER_PARAM))
                 .andExpect(status().isAccepted());
 
+        // Act & Assert
         val number = redisTemplate.opsForList().index(properties.getJobQueueKey(), 0);
         collector.checkThat(number, is(SAMPLE_NUMBER));
     }

@@ -95,5 +95,25 @@ spec:
               secretKeyRef:
                 key: password
                 name: postgres-secret
-{{ toYaml .Values.resources | indent 12 }}
+          - name: GKE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+          - name: GKE_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: GKE_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: GKE_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: GKE_POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+  {{ toYaml .Values.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}

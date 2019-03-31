@@ -1,6 +1,6 @@
 package com.example.primrweb;
 
-import static com.example.primrweb.config.TestConstants.SPRING_PROFILE_NAME;
+import static com.example.primrweb.TestUtils.SPRING_PROFILE_NAME;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

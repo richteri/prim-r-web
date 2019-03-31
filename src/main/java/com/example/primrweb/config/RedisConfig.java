@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-/**
- * Consumer should use polling, announcing new searches doesn't guarantee that the full queue will be processed
- */
 @Configuration
 public class RedisConfig {
 
