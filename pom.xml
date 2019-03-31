@@ -21,7 +21,7 @@
         <skipUTs>${skipTests}</skipUTs>
         <skipITs>${skipTests}</skipITs>
 
-        <checkstyle.version>8.17</checkstyle.version>
+        <checkstyle.version>8.18</checkstyle.version>
 
         <!-- Plugin Dependency Versions -->
         <maven-jacoco-plugin.version>0.8.0</maven-jacoco-plugin.version>

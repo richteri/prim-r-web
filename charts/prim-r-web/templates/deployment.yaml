@@ -96,9 +96,9 @@ spec:
                 key: password
                 name: postgres-secret
           - name: GKE_NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
           - name: GKE_POD_NAME
             valueFrom:
               fieldRef:
