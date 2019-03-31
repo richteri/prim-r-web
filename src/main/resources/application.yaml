@@ -2,6 +2,7 @@ application:
 
   jobQueueKey: ${JOB_QUEUE_KEY}
   processingQueueKey: ${PROCESSING_QUEUE_KEY}
+  cacheName: ${CACHE_NAME}
 
   gke:
     nodeName: ${GKE_NODE_NAME}

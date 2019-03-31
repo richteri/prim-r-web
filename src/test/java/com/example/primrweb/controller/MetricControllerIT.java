@@ -31,12 +31,12 @@ public class MetricControllerIT extends AbstractMockMvcIT {
 
     @Test
     public void getShouldReturnQueuedSearch() throws Exception {
-        // Arrange
+        // Arrange - performing search that is added to queue
         mockMvc.perform(get(PrimeNumberController.ENDPOINT)
                 .param(PrimeNumberController.NUMBER_PARAM, SAMPLE_STRING))
                 .andExpect(status().isAccepted());
 
-        // Act & Assert
+        // Act & Assert - verify that the queue is not empty
         mockMvc.perform(get(ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.jobQueue", hasSize(1)))
@@ -46,16 +46,17 @@ public class MetricControllerIT extends AbstractMockMvcIT {
 
     @Test
     public void getShouldReturnCachedNumber() throws Exception {
-        // Arrange
+        // Arrange - add the number to the DB
         repository.save(new PrimeNumber()
                 .setNumber(SAMPLE_NUMBER)
                 .setPrime(SAMPLE_NUMBER));
 
+        // - read the number from the DB
         mockMvc.perform(get(PrimeNumberController.ENDPOINT)
                 .param(PrimeNumberController.NUMBER_PARAM, SAMPLE_STRING))
                 .andExpect(status().isOk());
 
-        // Act & Assert
+        // Act & Assert - verify that the number is cached
         mockMvc.perform(get(ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.jobQueue").isEmpty())
