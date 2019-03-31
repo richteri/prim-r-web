@@ -5,4 +5,15 @@ management:
         include: "*"
   endpoint:
     shutdown:
-      enabled: false
+      enabled: true
+
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+
+debug: true
+
+logging:
+  level:
+    root: DEBUG
