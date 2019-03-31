@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MetricController {
 
     static final String ENDPOINT = "/metrics";
+    static final String FLUSH_ALL_ENDPOINT = "/flush-all";
 
     static final String STATUS_KEY = "status";
     static final String STATUS_UP = "UP";
@@ -41,6 +42,19 @@ public class MetricController {
         map.put(properties.getProcessingQueueKey(), queueService.getProcessingQueueSnapshot());
         map.put(properties.getCacheName(), getCacheKeys());
         return map;
+    }
+
+    @GetMapping(FLUSH_ALL_ENDPOINT)
+    public void flushAll() {
+        RedisConnection redisConnection = null;
+        try {
+            redisConnection = redisConnectionFactory.getConnection();
+            redisConnection.flushAll();
+        } finally {
+            if (redisConnection != null) {
+                redisConnection.close();
+            }
+        }
     }
 
     private Set<String> getCacheKeys() {
