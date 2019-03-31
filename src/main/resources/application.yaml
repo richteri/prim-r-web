@@ -6,7 +6,7 @@ application:
 spring:
 
   datasource:
-    url: jdbc:postgresql://35.198.100.214:3307/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
